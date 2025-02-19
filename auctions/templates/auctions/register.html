@@ -1,0 +1,40 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    {% if message %}
+        <div class="alert alert-danger" role="alert">
+            {{ message }}
+        </div>
+    {% endif %}
+    
+    <div class="card mx-auto mt-5" style="width: 25%;">
+        <div class="card-body">
+            <h1 class="card-title text-center mt-3">Register</h1>
+            <form action="{% url 'register' %}" method="post">
+                {% csrf_token %}
+                <div class="form-group mt-4">
+                    <label for="username">Username:</label>
+                    <input class="form-control" autofocus autocomplete="off" type="text" name="username" id="username" placeholder="Username">
+                </div>
+                <div class="form-group mt-4">
+                    <label for="email">Email Address:</label>
+                    <input class="form-control" type="email" autocomplete="off" name="email" id="email" placeholder="Email Address">
+                </div>
+                <div class="form-group mt-4">
+                    <label for="password">Password:</label>
+                    <input class="form-control" type="password" autocomplete="off" name="password" id="password" placeholder="Password">
+                </div>
+                <div class="form-group mt-4">
+                    <label for="confirmation">Confirm Password:</label>
+                    <input class="form-control" type="password" autocomplete="off" name="confirmation" id="confirmation" placeholder="Confirm Password">
+                </div>
+                <input class="btn btn-primary w-100 mt-4" type="submit" value="Register">
+            </form>
+            <p class="card-text mt-3 text-center">Already have an account? <a href="{% url 'login' %}">Log In here.</a></p>
+        </div>
+    </div>
+
+    
+
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "auctions/layout.html" %}
+{% load humanize %}
+
+{% block body %}
+    {% if message %}
+        <div class="alert alert-danger" role="alert">
+            {{ message }}
+        </div>
+    {% endif %}
+    <div class="container-fluid mt-2">
+        <div class="row mt-2">
+            <div class="col col-lg-5">
+                <div class="row">
+                    <div class="col" style="max-height: 400px; background-color: lightgray;">
+                        <img src="{{ listing.image }}" alt="Listing Image" id="listingImage">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <h3 class="mt-3"><strong>Price:</strong> ${{ listing.bid|floatformat:2|intcomma }}</h3>
+                        <hr>
+                        {% if user.is_authenticated and listing.active == True %}
+                            <label for="bid"><strong>Bid:</strong>
+                                {{ bidCount }} bid(s).
+                                Your current bid:
+                                {% if bids %}
+                                    ${{ bids.bid|floatformat:2 }}
+                                {% else %}
+                                    None
+                                {% endif %}
+                            </label>
+                            <form action="{% url 'listing' listing.id %}" method="POST" class="form-inline">
+                                {% csrf_token %}
+                                <div class="form-group">
+                                    <input autofocus class="form-control" type="number" name="bid" autocomplete="off" placeholder="Bid" id="bid" required min="{{ listing.bid }}" step="0.01">
+                                </div>
+                                <input class="btn btn-primary mx-2" type="submit" value="Bid">
+                            </form>
+                            {% if user == listing.username %}
+                                <hr>
+                                <form action="{% url 'close' %}" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="listingID" value="{{ listing.id }}">
+                                    <input class="btn btn-danger" type="submit" value="Close Auction">
+                                </form>
+                            {% endif %}
+                        {% elif listing.active == False %}
+                            {% if listing.highestBidder == user %}
+                                <h3>You won the auction!</h3>
+                            {% else %}
+                                <h3>Auction Closed!</h3>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="row align-items-center text-right">
+                    <div class="col">
+                        <h2 class="text-left" style="display: inline;float: left;">Listing: {{ listing.title }}</h2>
+                    </div>
+                    <div class="col-3">
+                        {% if user.is_authenticated %}
+                            {% if not inList %}
+                                <form action="/addWatchlist" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" value="{{ listing.id }}" name="listingID">
+                                    <input type="submit" value="Add to watchlist" class="btn btn-primary btn-mini">
+                                </form>
+                            {% else %}
+                                <form action="/removeWatchlist" method="POST">
+                                    {% csrf_token %}
+                                    <input type="hidden" value="{{ listing.id }}" name="listingID">
+                                    <input type="submit" value="Remove from watchlist" class="btn btn-danger btn-mini">
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col">
+                        <p><strong>Seller:</strong> {{ listing.username }}</p>
+                        <p><strong>Category:</strong> {{ listing.category }}</p>
+                        <div>
+                            <p><strong>Description:</strong></p>
+                            <p style="white-space: pre-line;">{{ listing.description }}</p>
+                        </div>
+                        <hr>
+                        <h4>Comments:</h4>
+                        {% if user.is_authenticated %}
+                        <form action="/comment" method="POST" class="form-inline">
+                            {% csrf_token %}
+                            <div class="form-group">
+                                <input autofocus autocomplete="off" class="form-control mx-1" type="text" name="comment" placeholder="Comment" id="comment" required>
+                            </div>
+                            <input type="hidden" name="listingID" value="{{ listing.id }}">
+                            <input class="btn btn-primary mx-1" type="submit" value="Comment">
+                        </form>
+                        {% endif %}
+                        <ul class="mt-3">
+                            {% for comment in comments %}
+                                <li><strong>{{ comment.username }}:</strong> {{ comment.comment }}</li>
+                            {% empty %}
+                                <li><strong>No comments.</strong></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

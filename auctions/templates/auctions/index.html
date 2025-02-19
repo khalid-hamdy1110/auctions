@@ -1,0 +1,33 @@
+{% extends "auctions/layout.html" %}
+{% load humanize %}
+
+{% block body %}
+    <h1 class="p-2">Active Listings</h1>
+
+    <div class="container-fluid mt-2 w-100">
+        <div class="row row-cols-1 row-cols-md-4">
+        {% for listing in listings %}
+            {% if listing.active %}
+                <div class="col mb-4">
+                    <div class="card h-100" id="listing-card">
+                        <div id="listingCard">
+                            <img src="{{ listing.image }}" class="card-img-top" alt="Listing Image" id="listingImage">
+                        </div>
+                        <div class="card-body">
+                            <h6 class="card-title"><strong>{{ listing.title|truncatechars:25 }}</strong></h6>
+                            <p class="card-text"><strong>Current Price:</strong> ${{ listing.bid|floatformat:2|intcomma }}</p>
+                            <p class="card-text" style="font-size: small;" id="listingDescription">{{ listing.description|truncatechars:100 }}</p>
+                            <a href="{% url 'listing' listing.id %}" class="stretched-link"></a>
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-muted">Listed by {{ listing.username }} on {{ listing.dateTime }}</small>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% empty %}
+        <h4 class="mx-2">No active listings!</h4>
+        {% endfor %}
+        </div>
+    </div>
+{% endblock %}

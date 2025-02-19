@@ -1,0 +1,38 @@
+{% extends "auctions/layout.html" %}
+{% load humanize %}
+
+{% block body %}
+    <h1 class="p-2">Watchlist</h1>
+
+    <div class="container-fluid mt-2 w-100">
+        <div class="row row-cols-1 row-cols-md-4">
+        {% for list in watchlist %}
+            {% if list.listing %}
+                <div class="col mb-4">
+                    <div class="card h-100" id="listing-card">
+                        <div id="listingCard">
+                            <img src="{{ list.listing.image }}" class="card-img-top" alt="Listing Image" id="listingImage">
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title"><strong>{{ list.listing.title }}</strong></h5>
+                            <p class="card-text"><strong>Current Price:</strong> ${{ list.listing.bid|floatformat:2|intcomma }}</p>
+                            <p class="card-text" id="listingDescription">{{ list.listing.description|truncatechars:75 }}</p>
+                            <a href="{% url 'listing' list.listing.id %}" class="stretched-link"></a>
+                        </div>
+                        <div class="card-footer">
+                            <small class="text-muted">By {{ list.listing.username }} on {{ list.listing.dateTime }}</small>
+                            {% if list.listing.active %}
+                                <span class="badge badge-success">Active</span>
+                            {% else %}
+                                <span class="badge badge-danger">Not Active</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        {% empty %}
+            <h5 class="mx-2">No listings in watchlist!</h5>
+        {% endfor %}
+        </div>
+    </div>
+{% endblock %}
